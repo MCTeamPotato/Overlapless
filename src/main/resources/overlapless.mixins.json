@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "me.kall.overlapless.mixin",
+  "plugin": "me.kall.overlapless.mixin.MixinExtrasInitializer",
+  "compatibilityLevel": "JAVA_8",
+  "overwrites": {
+    "conformVisibility": false
+  },
+  "minVersion": "0.8",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "ChunkGeneratorMixin",
+    "StructureManagerAccessor"
+  ]
+}

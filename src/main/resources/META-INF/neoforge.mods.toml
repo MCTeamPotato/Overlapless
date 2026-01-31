@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "overlapless"
+version = "${version}"
+displayName = "Overlapless"
+authors = "Kall"
+description = '''
+A Minecraft mod
+'''
+#logoFile = ""
+
+[[dependencies.overlapless]]
+modId="duplicationless"
+mandatory=true
+versionRange="[1.1.5,)"
+ordering="NONE"
+side="BOTH"
+
+[[mixins]]
+config = "overlapless.mixins.json"

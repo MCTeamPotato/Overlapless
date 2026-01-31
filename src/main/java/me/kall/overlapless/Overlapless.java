@@ -32,6 +32,7 @@ public final class Overlapless {
     public static final String MOD_ID = "overlapless";
     public static final Logger LOGGER = LogManager.getLogger(Overlapless.class);
 
+    //TODO: Saved Data for those whose ChunkStatus is not FULL?
     private static final Object2ObjectMap<ResourceLocation, Long2ObjectMap<Set<ExistingStructure>>> EXISTING = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
     public static ResourceLocation getName(Structure structure) {

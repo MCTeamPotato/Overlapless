@@ -2,6 +2,7 @@ package me.kall.overlapless.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.kall.overlapless.Overlapless;
+import me.kall.overlapless.data.ExistingStructure;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ChunkGenerator.class)
 public abstract class ChunkGeneratorMixin {
     @Inject(method = "tryGenerateStructure", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/StructureManager;setStartForStructure(Lnet/minecraft/core/SectionPos;Lnet/minecraft/world/level/levelgen/structure/Structure;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/StructureAccess;)V"), cancellable = true)
-    private void structureCompatibility$gen(
+    private void beforeStructureGeneration(
             StructureSet.StructureSelectionEntry structureSelectionEntry,
             StructureManager structureManager,
             RegistryAccess registryAccess,
@@ -37,7 +38,7 @@ public abstract class ChunkGeneratorMixin {
             @Local @NotNull StructureStart pendingStructure
     ) {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
-        Overlapless.ExistingStructure existing = Overlapless.getAnyExisting(pendingBox, (ServerLevel) ((StructureManagerAccessor)structureManager).getLevel());
+        ExistingStructure existing = Overlapless.getAnyExisting(pendingBox, (ServerLevel) ((StructureManagerAccessor)structureManager).getLevel());
 
         if (existing != null) {
             cir.setReturnValue(false);
@@ -48,7 +49,7 @@ public abstract class ChunkGeneratorMixin {
     }
 
     @Inject(method = "tryGenerateStructure", at = @At(value = "RETURN", ordinal = 0))
-    private void afterGenerateStructure(
+    private void afterStructureGeneration(
             StructureSet.StructureSelectionEntry structureSelectionEntry,
             StructureManager structureManager,
             RegistryAccess registryAccess,
@@ -61,6 +62,6 @@ public abstract class ChunkGeneratorMixin {
             @NotNull CallbackInfoReturnable<Boolean> cir,
             @Local @NotNull StructureStart pendingStructure
     ) {
-        if (cir.getReturnValue()) Overlapless.afterGenerateStructure(pendingStructure, (ServerLevel) ((StructureManagerAccessor)structureManager).getLevel());
+        if (cir.getReturnValue()) Overlapless.afterStructureGeneration(pendingStructure, (ServerLevel) ((StructureManagerAccessor)structureManager).getLevel());
     }
 }

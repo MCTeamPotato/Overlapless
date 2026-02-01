@@ -2,53 +2,20 @@ package me.kall.overlapless.data;
 
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.*;
-import me.kall.duplicationless.event.ChunkTickEvent;
 import me.kall.overlapless.Overlapless;
-import me.kall.overlapless.ext.Forgettable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = Overlapless.MOD_ID)
 public class ExistingStructures extends SavedData {
     private final Object2ObjectMap<ResourceLocation, Long2ObjectMap<Set<ExistingStructure>>> existing = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-
-    private static final Object2ObjectMap<ResourceLocation, LongSet> FULL_CHUNKS = new Object2ObjectOpenHashMap<>();
-
-    @SubscribeEvent
-    public static void clean(ChunkTickEvent.@NotNull Pre event) {
-        ServerLevel serverLevel = event.getLevel();
-        ResourceLocation dimension = serverLevel.dimension().location();
-
-        LevelChunk levelChunk = event.getChunk();
-        long pos = levelChunk.getPos().toLong();
-
-        boolean modified = false;
-
-        if (((Forgettable)levelChunk).overlapless$isForgettable()) {
-            ((Forgettable)levelChunk).overlapless$setForgettable(false);
-            modified = FULL_CHUNKS.computeIfAbsent(dimension, key -> new LongOpenHashSet()).add(pos);
-        }
-
-        if (!modified) return;
-
-        LongSet chunks = FULL_CHUNKS.get(dimension);
-        if (chunks == null || chunks.size() <= serverLevel.getServer().getPlayerList().getSimulationDistance()) return;
-
-        ExistingStructures.get(serverLevel).remove(dimension, chunks);
-
-        FULL_CHUNKS.remove(dimension);
-    }
 
     public void save(ResourceLocation dimension, long chunk, ExistingStructure existingStructure) {
         if (
@@ -65,14 +32,11 @@ public class ExistingStructures extends SavedData {
         return this.existing.getOrDefault(dimension, Long2ObjectMaps.emptyMap()).getOrDefault(chunk, Collections.emptySet());
     }
 
-    public void remove(ResourceLocation dimension, LongSet toForget) {
+    public void remove(ResourceLocation dimension, long chunk) {
         Long2ObjectMap<Set<ExistingStructure>> chunks = this.existing.get(dimension);
         if (chunks == null) return;
 
-        LongIterator positions = toForget.iterator();
-        while (positions.hasNext()) {
-            chunks.remove(positions.nextLong());
-        }
+        chunks.remove(chunk);
 
         if (chunks.isEmpty()) {
             this.existing.remove(dimension);

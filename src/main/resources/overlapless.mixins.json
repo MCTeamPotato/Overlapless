@@ -12,7 +12,7 @@
   },
   "mixins": [
     "ChunkGeneratorMixin",
-    "LevelChunkMixin",
-    "StructureManagerAccessor"
+    "StructureManagerAccessor",
+    "StructureStartMixin"
   ]
 }

@@ -139,7 +139,10 @@ tasks.register("publishCurseForge", TaskPublishCurseForge) {
         mainFile.changelog = CHANGELOG
         mainFile.changelogType = "markdown"
         mainFile.addModLoader(isNeo ? "NeoForge" : "Forge")
-        mainFile.addJavaVersion(javaInfo.supported)
+        Iterator<String> supported = javaInfo.supported.iterator()
+        while (supported.hasNext()) {
+            mainFile.addJavaVersion(supported.next());
+        }
         mainFile.addGameVersion(minecraft_version)
         mainFile.addRequirement("duplicationless")
     

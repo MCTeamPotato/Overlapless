@@ -1,17 +1,18 @@
 package me.kall.overlapless.data;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 public record ExistingStructure(int minY, int maxY, String existing) {
     @Override
-    public @NotNull String toString() {
-        return this.minY + ";" + this.maxY + ";" + this.existing;
+    public boolean equals(Object object) {
+        if (object instanceof ExistingStructure existingStructure) {
+            return existingStructure.minY == this.minY && existingStructure.maxY == this.maxY && Objects.equals(existingStructure.existing, this.existing);
+        }
+        return false;
     }
 
-    @Contract("_ -> new")
-    public static @NotNull ExistingStructure fromString(@NotNull String string) {
-        String[] parts = string.split(";");
-        return new ExistingStructure(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), parts[2]);
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.minY, this.maxY, this.existing);
     }
 }

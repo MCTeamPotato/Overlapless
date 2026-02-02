@@ -45,13 +45,12 @@ public final class Overlapless {
         int minChunkZ = SectionPos.blockToSectionCoord(pendingBox.minZ());
         int maxChunkZ = SectionPos.blockToSectionCoord(pendingBox.maxZ());
         ExistingStructure existing = null;
-        ExistingStructures existingStructures = ExistingStructures.get(level);
 
         checking: {
             for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                     long existingChunk = ChunkPos.asLong(chunkX, chunkZ);
-                    Set<ExistingStructure> structures = existingStructures.get(level.dimension().location(), existingChunk);
+                    Set<ExistingStructure> structures = ExistingStructures.get(level.dimension().location(), existingChunk);
                     if (structures == null) continue;
                     for (ExistingStructure existingStructure : structures) {
                         if (Overlapless.overlap(existingStructure.minY(), existingStructure.maxY(), pendingMinY, pendingMaxY)) {
@@ -76,11 +75,10 @@ public final class Overlapless {
         ResourceLocation dimension = level.dimension().location();
 
         ExistingStructure existingStructure = new ExistingStructure(pendingBox.minY(), pendingBox.maxY(), Overlapless.getName(pendingStructure.getStructure()).toString());
-        ExistingStructures existingStructures = ExistingStructures.get(level);
 
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                existingStructures.save(dimension, ChunkPos.asLong(chunkX, chunkZ), existingStructure);
+                ExistingStructures.record(dimension, ChunkPos.asLong(chunkX, chunkZ), existingStructure);
             }
         }
     }

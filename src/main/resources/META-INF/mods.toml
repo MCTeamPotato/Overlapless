@@ -11,10 +11,3 @@ authors = "Kall"
 description = '''
 '''
 #logoFile = ""
-
-[[dependencies.overlapless]]
-modId="duplicationless"
-mandatory=true
-versionRange="[1.1.5,)"
-ordering="NONE"
-side="BOTH"

@@ -1,6 +1,5 @@
 package me.kall.overlapless;
 
-import me.kall.duplicationless.ext.RegistryEntry;
 import me.kall.overlapless.data.ExistingStructure;
 import me.kall.overlapless.data.ExistingStructures;
 import net.minecraft.core.SectionPos;
@@ -25,12 +24,13 @@ import java.util.Set;
 public final class Overlapless {
     public static final String MOD_ID = "overlapless";
     public static final Logger LOGGER = LogManager.getLogger(Overlapless.class);
+    private static final ResourceLocation NONE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "none");
 
     public static ResourceLocation getName(Structure structure) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server == null) return RegistryEntry.NONE;
+        if (server == null) return NONE;
         ResourceLocation id = server.registryAccess().registryOrThrow(Registries.STRUCTURE).getKey(structure);
-        return id == null ? RegistryEntry.NONE : id;
+        return id == null ? NONE : id;
     }
 
     private static boolean overlap(int minY1, int maxY1, int minY2, int maxY2) {

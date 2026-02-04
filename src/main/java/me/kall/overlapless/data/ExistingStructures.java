@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = Overlapless.MOD_ID)
 public class ExistingStructures {
-    private static final Object2ObjectMap<ResourceLocation, Long2ObjectMap<Set<ExistingStructure>>> EXISTING_STRUCTURES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+    public static final Object2ObjectMap<ResourceLocation, Long2ObjectMap<Set<ExistingStructure>>> EXISTING_STRUCTURES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
     public static void record(ResourceLocation dimension, long chunk, ExistingStructure existingStructure) {
         EXISTING_STRUCTURES

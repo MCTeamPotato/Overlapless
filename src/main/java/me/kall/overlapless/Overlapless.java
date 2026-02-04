@@ -80,15 +80,17 @@ public final class Overlapless {
         ExistingStructure existing = null;
 
         checking: {
-            for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                    long existingChunk = ChunkPos.asLong(chunkX, chunkZ);
-                    Set<ExistingStructure> structures = ExistingStructures.get(dimension, existingChunk);
-                    if (structures == null) continue;
-                    for (ExistingStructure existingStructure : structures) {
-                        if (Overlapless.overlap(existingStructure.minY(), existingStructure.maxY(), pendingMinY, pendingMaxY)) {
-                            existing = existingStructure;
-                            break checking;
+            synchronized (ExistingStructures.EXISTING_STRUCTURES) {
+                for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+                    for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                        long existingChunk = ChunkPos.asLong(chunkX, chunkZ);
+                        Set<ExistingStructure> structures = ExistingStructures.get(dimension, existingChunk);
+                        if (structures == null) continue;
+                        for (ExistingStructure existingStructure : structures) {
+                            if (Overlapless.overlap(existingStructure.minY(), existingStructure.maxY(), pendingMinY, pendingMaxY)) {
+                                existing = existingStructure;
+                                break checking;
+                            }
                         }
                     }
                 }
@@ -109,9 +111,11 @@ public final class Overlapless {
 
         ExistingStructure existingStructure = new ExistingStructure(pendingBox.minY(), pendingBox.maxY(), Overlapless.getName(pendingStructure.getStructure()).toString());
 
-        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                ExistingStructures.record(dimension, ChunkPos.asLong(chunkX, chunkZ), existingStructure);
+        synchronized (ExistingStructures.EXISTING_STRUCTURES) {
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                    ExistingStructures.record(dimension, ChunkPos.asLong(chunkX, chunkZ), existingStructure);
+                }
             }
         }
     }

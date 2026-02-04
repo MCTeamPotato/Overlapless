@@ -2,7 +2,32 @@ package me.kall.overlapless.data;
 
 import java.util.Objects;
 
-public record ExistingStructure(int minY, int maxY, String existing) {
+public final class ExistingStructure {
+    public final int minY;
+    public final int maxY;
+    public final String existing;
+
+    private final int hash;
+
+    public ExistingStructure(int minY, int maxY, String existing) {
+        this.minY = minY;
+        this.maxY = maxY;
+        this.existing = existing;
+        this.hash = Objects.hash(this.minY, this.maxY, this.existing);
+    }
+
+    public int minY() {
+        return this.minY;
+    }
+
+    public int maxY() {
+        return this.maxY;
+    }
+
+    public String existing() {
+        return this.existing;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object instanceof ExistingStructure existingStructure) {
@@ -13,6 +38,6 @@ public record ExistingStructure(int minY, int maxY, String existing) {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.minY, this.maxY, this.existing);
+        return this.hash;
     }
 }

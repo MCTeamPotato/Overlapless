@@ -1,2 +1,2 @@
-# 1.0.1
-- No longer requires Duplicationless as dependency
+# 1.0.2
+- Introduce config option "UnskippableStructures": These will always generate even if there are existing structures that occupy the chunk sections.

@@ -38,7 +38,7 @@ public abstract class ChunkGeneratorMixin {
             @Local @NotNull StructureStart pendingStructure
     ) {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
-        ExistingStructure existing = Overlapless.getAnyExisting(pendingBox, (ServerLevel) ((StructureManagerAccessor)structureManager).getLevel());
+        ExistingStructure existing = Overlapless.getAnyExisting(pendingStructure, (ServerLevel) ((StructureManagerAccessor)structureManager).getLevel());
 
         if (existing != null) {
             cir.setReturnValue(false);

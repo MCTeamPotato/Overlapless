@@ -6,3 +6,5 @@
 - Introduce config option "UnskippableStructures": These will always generate even if there are existing structures that occupy the chunk sections.
 # 1.0.3
 - Resolve a concurrent issue during existing structures' iteration
+# 1.0.4
+- Resolve https://github.com/MCTeamPotato/Overlapless/issues/1

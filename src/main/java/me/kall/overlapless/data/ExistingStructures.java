@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = Overlapless.MOD_ID)
@@ -24,8 +24,8 @@ public class ExistingStructures {
                 .add(existingStructure);
     }
 
-    public static Set<ExistingStructure> get(ResourceLocation dimension, long chunk) {
-        return EXISTING_STRUCTURES.getOrDefault(dimension, Long2ObjectMaps.emptyMap()).getOrDefault(chunk, Collections.emptySet());
+    public static @Nullable Set<ExistingStructure> get(ResourceLocation dimension, long chunk) {
+        return EXISTING_STRUCTURES.getOrDefault(dimension, Long2ObjectMaps.emptyMap()).get(chunk);
     }
 
     @SubscribeEvent

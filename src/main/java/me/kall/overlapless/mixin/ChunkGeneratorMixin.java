@@ -6,10 +6,10 @@ import me.kall.overlapless.data.ExistingStructure;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChunkGenerator.class)
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"DataFlowIssue"})
 public abstract class ChunkGeneratorMixin {
     @Inject(method = "tryGenerateStructure", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/StructureManager;setStartForStructure(Lnet/minecraft/core/SectionPos;Lnet/minecraft/world/level/levelgen/structure/Structure;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/StructureAccess;)V"), cancellable = true)
     private void beforeStructureGeneration(
@@ -42,7 +42,7 @@ public abstract class ChunkGeneratorMixin {
     ) {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
         LevelAccessor levelAccessor = ((StructureManagerAccessor)structureManager).getLevel();
-        ExistingStructure existing = Overlapless.getAnyExisting(pendingStructure, levelAccessor instanceof WorldGenRegion worldGenRegion ? worldGenRegion.getLevel() : (ServerLevel) levelAccessor);
+        ExistingStructure existing = Overlapless.getAnyExisting(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
 
         if (existing != null) {
             cir.setReturnValue(false);
@@ -68,7 +68,7 @@ public abstract class ChunkGeneratorMixin {
     ) {
         if (cir.getReturnValue()) {
             LevelAccessor levelAccessor = ((StructureManagerAccessor)structureManager).getLevel();
-            Overlapless.afterStructureGeneration(pendingStructure, levelAccessor instanceof WorldGenRegion worldGenRegion ? worldGenRegion.getLevel() : (ServerLevel) levelAccessor);
+            Overlapless.afterStructureGeneration(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
         }
     }
 }

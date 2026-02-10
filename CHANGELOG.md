@@ -8,3 +8,5 @@
 - Resolve a concurrent issue during existing structures' iteration
 # 1.0.4
 - Resolve https://github.com/MCTeamPotato/Overlapless/issues/1
+# 1.0.5
+- Minor compatibility improvement for custom WorldGenLevel in other mods

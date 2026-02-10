@@ -6,6 +6,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import me.kall.overlapless.data.ExistingStructure;
 import me.kall.overlapless.data.ExistingStructures;
+import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +51,22 @@ public final class Overlapless {
         CONFIG = builder.build();
     }
 
-    private static final Supplier<Set<ResourceLocation>> STRUCTURES = Suppliers.memoize(() -> UNSKIPPABLE_STRUCTURES.get().stream().map(ResourceLocation::parse).collect(Collectors.toSet()));
+    private static final Supplier<@NotNull Set<ResourceLocation>> STRUCTURES = Suppliers.memoize(() -> {
+        if (UNSKIPPABLE_STRUCTURES.get().isEmpty()) return Collections.emptySet();
+        Set<ResourceLocation> structures = UNSKIPPABLE_STRUCTURES.get().stream().map(ResourceLocation::parse).collect(Collectors.toSet());
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return structures;
+        Registry<Structure> registry = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Iterator<ResourceLocation> candidates = structures.iterator();
+        while (candidates.hasNext()) {
+            ResourceLocation candidate = candidates.next();
+            if (registry.getOptional(candidate).isEmpty()) {
+                LOGGER.error("[Overlapless] Failed to found corresponding structure registry element. Entry {} in UnskippableStructures config option is invalid", candidate.toString());
+                candidates.remove();
+            }
+        }
+        return structures;
+    });
 
     public Overlapless(@NotNull FMLJavaModLoadingContext context) {
         context.registerConfig(ModConfig.Type.COMMON, CONFIG);

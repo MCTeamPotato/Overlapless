@@ -10,3 +10,5 @@
 - Resolve https://github.com/MCTeamPotato/Overlapless/issues/1
 # 1.0.5
 - Minor compatibility improvement for custom WorldGenLevel in other mods
+# 1.0.6
+- Code refactor. No actual changes for players.

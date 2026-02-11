@@ -3,9 +3,9 @@ package me.kall.overlapless.data;
 import java.util.Objects;
 
 public final class ExistingStructure {
-    public final int minY;
-    public final int maxY;
-    public final String existing;
+    private final int minY;
+    private final int maxY;
+    private final String existing;
 
     private final int hash;
 

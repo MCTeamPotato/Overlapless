@@ -3,6 +3,7 @@ package me.kall.overlapless.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.kall.overlapless.Overlapless;
 import me.kall.overlapless.data.ExistingStructure;
+import me.kall.overlapless.data.ExistingStructures;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
@@ -42,7 +43,7 @@ public abstract class ChunkGeneratorMixin {
     ) {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
         LevelAccessor levelAccessor = ((StructureManagerAccessor)structureManager).getLevel();
-        ExistingStructure existing = Overlapless.getAnyExisting(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
+        ExistingStructure existing = ExistingStructures.getAnyExisting(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
 
         if (existing != null) {
             cir.setReturnValue(false);
@@ -68,7 +69,7 @@ public abstract class ChunkGeneratorMixin {
     ) {
         if (cir.getReturnValue()) {
             LevelAccessor levelAccessor = ((StructureManagerAccessor)structureManager).getLevel();
-            Overlapless.afterStructureGeneration(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
+            ExistingStructures.afterStructureGeneration(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
         }
     }
 }

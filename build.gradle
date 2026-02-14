@@ -67,8 +67,10 @@ repositories {
 def versionMap = [
     "1.20.1" : [forge: "47.4.2"       , parchment: "2023.09.03"],
     "1.16.5" : [forge: "36.2.42"      , parchment: "2022.03.06"],
+    "1.18.2" : [forge: "40.3.12"      , parchment: "2022.11.06"],
     "1.21.1" : [neo  : "21.1.192"     , parchment: "2024.11.17"],
     "1.21.4":  [neo  : "21.4.156"     , parchment: "2025.03.23"],
+    "1.21.6":  [neo  : "21.6.20-beta" , parchment: "2025.06.29"],
     "1.21.8":  [neo  : "21.8.52"      , parchment: "2025.09.14"],
     "1.21.11": [neo  : "21.11.30-beta", parchment: "2025.12.20"]
 ]
@@ -109,8 +111,10 @@ processResources {
 def javaInfoMap = [
         "1.20.1":  [version  : JavaVersion.VERSION_17,  release  : 17, supported: ["Java 17", "Java 21", "Java 22"]],
         "1.16.5":  [version  : JavaVersion.VERSION_1_8, release  : 8,  supported: ["Java 8", "Java 17", "Java 21", "Java 22"]],
+        "1.18.2":  [version  : JavaVersion.VERSION_17,  release  : 17,  supported: ["Java 17", "Java 21", "Java 22"]],
         "1.21.1":  [version  : JavaVersion.VERSION_21,  release  : 21, supported: ["Java 21", "Java 22"]],
         "1.21.4":  [version  : JavaVersion.VERSION_21,  release  : 21, supported: ["Java 21", "Java 22"]],
+        "1.21.6":  [version  : JavaVersion.VERSION_21,  release  : 21, supported: ["Java 21", "Java 22"]],
         "1.21.8":  [version  : JavaVersion.VERSION_21,  release  : 21, supported: ["Java 21", "Java 22"]],
         "1.21.11": [version  : JavaVersion.VERSION_21,  release  : 21, supported: ["Java 21", "Java 22"]]
 ]

@@ -2,6 +2,7 @@ package me.kall.overlapless.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.kall.overlapless.Overlapless;
+import me.kall.overlapless.config.Config;
 import me.kall.overlapless.data.ExistingStructure;
 import me.kall.overlapless.data.ExistingStructures;
 import net.minecraft.core.RegistryAccess;
@@ -47,9 +48,11 @@ public abstract class ChunkGeneratorMixin {
 
         if (existing != null) {
             cir.setReturnValue(false);
-            int x = chunkPos.getMinBlockX();
-            int z = chunkPos.getMinBlockZ();
-            Overlapless.LOGGER.info("Section at [{}, {minY: {}, maxY: {}}, {}] is occupied by structure {}, skipping the generation of {} at [{}, {minY: {}, maxY: {}}, {}]", x, existing.minY(), existing.maxY(), z, existing.existing(), Overlapless.getName(pendingStructure.getStructure()), x, pendingBox.minY(), pendingBox.maxY(), z);
+            if (Config.logSkipStructure()) {
+                int x = chunkPos.getMinBlockX();
+                int z = chunkPos.getMinBlockZ();
+                Overlapless.LOGGER.info("Section at [{}, {minY: {}, maxY: {}}, {}] is occupied by structure {}. Skipping the generation of {} at [{}, {minY: {}, maxY: {}}, {}]", x, existing.minY(), existing.maxY(), z, existing.existing(), Overlapless.getName(pendingStructure.getStructure()), x, pendingBox.minY(), pendingBox.maxY(), z);
+            }
         }
     }
 

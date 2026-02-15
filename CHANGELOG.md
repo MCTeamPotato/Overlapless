@@ -12,4 +12,7 @@
 - Minor compatibility improvement for custom WorldGenLevel in other mods
 # 1.0.6
 - Code refactor. No actual changes for players.
-- Backport to 1.16.5
+- Port to 1.16.5 and 1.18.2, as well as many subversions 1.21.x
+# 1.1.0
+- Introduce SkippableFeatures config option. You can write down the features' registry names here so they will not get overlapped with existing structures.
+- Introduce PrintStructureSkipEventInLog and PrintFeatureSkipEventInLog config option

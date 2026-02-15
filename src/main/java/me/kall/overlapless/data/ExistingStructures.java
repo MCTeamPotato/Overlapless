@@ -45,6 +45,10 @@ public class ExistingStructures {
         return Math.max(minY1, minY2) <= Math.min(maxY1, maxY2);
     }
 
+    public static @Nullable Set<ExistingStructure> getInChunk(ResourceLocation dimension, long chunk) {
+        return EXISTING_STRUCTURES.getOrDefault(dimension, Long2ObjectMaps.emptyMap()).get(chunk);
+    }
+
     public static @Nullable ExistingStructure getAnyExisting(@NotNull StructureStart pendingStructure, ServerLevel level) {
         if (Config.getUnskippableStructures().contains(Overlapless.getName(pendingStructure.getStructure()))) return null;
 

@@ -16,3 +16,5 @@
 # 1.1.0
 - Introduce SkippableFeatures config option. You can write down the features' registry names here so they will not get overlapped with existing structures.
 - Introduce PrintStructureSkipEventInLog and PrintFeatureSkipEventInLog config option
+# 1.1.1
+- Resolve https://github.com/MCTeamPotato/Overlapless/issues/2

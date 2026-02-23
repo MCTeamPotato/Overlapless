@@ -4,34 +4,29 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.kall.overlapless.Overlapless;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = Overlapless.MOD_ID)
 public class Config {
     private static final ForgeConfigSpec CONFIG;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> UNSKIPPABLE_STRUCTURES_CONFIG, SKIPPABLE_FEATURES_CONFIG;
-    private static final ForgeConfigSpec.BooleanValue PRINT_SKIPPING_STRUCTURE, PRINT_SKIPPING_FEATURE, NOTIFY_CONFIG_CHANGE;
+    private static final ForgeConfigSpec.BooleanValue PRINT_SKIPPING_STRUCTURE, PRINT_SKIPPING_FEATURE;
     private static final Set<ResourceLocation> UNSKIPPABLE_STRUCTURES = new ObjectOpenHashSet<>();
     private static final Set<ResourceLocation> SKIPPABLE_FEATURES = new ObjectOpenHashSet<>();
 
@@ -49,20 +44,8 @@ public class Config {
                 .defineListAllowEmpty("SkippableFeatures", Lists.newArrayList(), Predicates.alwaysTrue());
         PRINT_SKIPPING_STRUCTURE = builder.define("PrintStructureSkipEventInLog", true);
         PRINT_SKIPPING_FEATURE = builder.define("PrintFeatureSkipEventInLog", true);
-        NOTIFY_CONFIG_CHANGE = builder.define("NotifyConfigChange", true);
         builder.pop();
         CONFIG = builder.build();
-    }
-
-    @SubscribeEvent
-    public static void notifyGamer(PlayerEvent.@NotNull PlayerLoggedInEvent event) {
-        Player player = event.getEntity();
-        if (NOTIFY_CONFIG_CHANGE.get() && player.hasPermissions(Commands.LEVEL_OWNERS) && player instanceof ServerPlayer) {
-            ObjectOpenHashSet<String> current = new ObjectOpenHashSet<>(UNSKIPPABLE_STRUCTURES_CONFIG.get());
-            ObjectOpenHashSet<String> origin = new ObjectOpenHashSet<>(UNSKIPPABLE_STRUCTURES_CONFIG.getDefault());
-            if (current.equals(origin)) return;
-            player.displayClientMessage(Component.translatable("notify.overlapless"), false);
-        }
     }
 
     public static void register(@NotNull ModLoadingContext context, @NotNull IEventBus modBus) {

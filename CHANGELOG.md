@@ -18,3 +18,5 @@
 - Introduce PrintStructureSkipEventInLog and PrintFeatureSkipEventInLog config option
 # 1.1.1
 - Resolve https://github.com/MCTeamPotato/Overlapless/issues/2
+# 1.1.2
+- Add notification on UnskippableStructures config change.

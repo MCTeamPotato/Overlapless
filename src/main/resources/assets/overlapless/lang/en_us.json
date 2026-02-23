@@ -1,0 +1,3 @@
+{
+  "notify.overlapless": "[Overlapless] It seems that you have modified the UnskippableStructures config option to prevent the generation of your important structures from being skipped. May you create a pull request or an issue on https://github.com/MCTeamPotato/Overlapless to tell us about them? So we can include them in our default config and this allow other players to have a better experience by default. This message can only be shown to game owners (permission level 4). You can mute this message by the NotifyConfigChange config option in overlapless-common.toml"
+}

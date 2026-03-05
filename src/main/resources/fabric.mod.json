@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "overlapless",
+  "version": "${version}",
+  "name": "Overlapless",
+  "description": "A Minecraft mod",
+  "authors": [
+    "Kall", "TexTrue"
+  ],
+  "contact": {
+    "sources": "https://github.com/MCTeamPotato/Overlapless"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.kall.overlapless.Overlapless"
+    ]
+  },
+  "mixins": [
+    "overlapless.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.2",
+    "minecraft": "~1.20.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "forgeconfigapiport": "*"
+  }
+}

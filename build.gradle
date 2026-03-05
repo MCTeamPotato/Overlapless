@@ -7,8 +7,6 @@ plugins {
     id 'net.darkhax.curseforgegradle' version '1.1.+'
 }
 
-boolean isNeo = loom.platform.get().displayName() == "NeoForge"
-
 configurations {
     shadow
     implementation.extendsFrom(shadow)
@@ -16,7 +14,6 @@ configurations {
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    if (!isNeo) relocate "com.llamalad7.mixinextras", "me.kall.${archives_name}.mixinextras"
     mergeServiceFiles()
     archiveClassifier = "dev-shadow"
     exclude "LICENSE_MixinExtras"
@@ -38,12 +35,6 @@ base {
 
 loom {
     silentMojangMappingsLicense()
-
-    if (!isNeo) {
-        forge {
-            mixinConfig "${archives_name}.mixins.json"
-        }
-    }
 }
 
 repositories {
@@ -62,17 +53,25 @@ repositories {
         url = "https://cursemaven.com"
         content { includeGroup "curse.maven" }
     }
+    maven {
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
+    maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/"
+    }
 }
 
 def versionMap = [
-    "1.20.1" : [forge: "47.4.2"       , parchment: "2023.09.03"],
-    "1.16.5" : [forge: "36.2.42"      , parchment: "2022.03.06"],
-    "1.18.2" : [forge: "40.3.12"      , parchment: "2022.11.06"],
-    "1.21.1" : [neo  : "21.1.192"     , parchment: "2024.11.17"],
-    "1.21.4":  [neo  : "21.4.156"     , parchment: "2025.03.23"],
-    "1.21.6":  [neo  : "21.6.20-beta" , parchment: "2025.06.29"],
-    "1.21.8":  [neo  : "21.8.52"      , parchment: "2025.09.14"],
-    "1.21.11": [neo  : "21.11.30-beta", parchment: "2025.12.20"]
+    "1.20.1" : [fapi: "0.92.7+1.20.1"  , modmenu: "7.2.2"        , fcapi: "8.0.3"    , parchment: "2023.09.03"],
+    "1.16.5" : [fapi: "0.42.0+1.16"    , modmenu: "1.16.23"      , fcapi: "1.0.2"    , parchment: "2022.03.06"],
+    "1.18.2" : [fapi: "0.77.0+1.18.2"  , modmenu: "3.2.5"        , fcapi: "3.2.4"    , parchment: "2022.11.06"],
+    "1.21.1" : [fapi: "0.116.9+1.21.1" , modmenu: "11.0.3"       , fcapi: "21.1.6"   , parchment: "2024.11.17"],
+    "1.21.4":  [fapi: "0.119.4+1.21.4" , modmenu: "13.0.3"       , fcapi: "21.4.3"   , parchment: "2025.03.23"],
+    "1.21.6":  [fapi: "0.128.2+1.21.6" , modmenu: "15.0.1"       , fcapi: "21.6.4"   , parchment: "2025.06.29"],
+    "1.21.8":  [fapi: "0.136.1+1.21.8" , modmenu: "15.0.1"       , fcapi: "21.8.2"   , parchment: "2025.09.14"],
+    "1.21.11": [fapi: "0.141.3+1.21.11", modmenu: "17.0.0-beta.2", fcapi: "21.11.1"  , parchment: "2025.12.20"]
 ]
 
 HashMap<String, String> versionInfo = versionMap[minecraft_version]
@@ -84,27 +83,35 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${versionInfo.parchment}@zip")
     }
 
-    if (isNeo) {
-        neoForge "net.neoforged:neoforge:${versionInfo.neo}"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${versionInfo.fapi}"
+
+    if (minecraft_version == "1.16.5" || minecraft_version == "1.18.2") {
+        modApi("net.minecraftforge:forgeconfigapiport-fabric:${versionInfo.fcapi}") {
+            exclude group: "net.fabricmc.fabric-api"
+        }
     } else {
-        forge "net.minecraftforge:forge:${project.minecraft_version}-${versionInfo.forge}"
+        modApi("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${versionInfo.fcapi}") {
+            exclude group: "net.fabricmc.fabric-api"
+        }
+    }
+    modImplementation("com.terraformersmc:modmenu:${versionInfo.modmenu}") {
+        exclude group: "net.fabricmc.fabric-api"
     }
 
-    if (!isNeo) shadow(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixinextras_version}"))
+    modLocalRuntime("fuzs.forgeconfigscreens:forgeconfigscreens-fabric:8.0.2") {
+        exclude group: "net.fabricmc.fabric-api"
+    }
+    modLocalRuntime("maven.modrinth:sparsestructures:XcUzPH3Z") {
+        exclude group: "net.fabricmc.fabric-api"
+    }
 }
 
 processResources {
     inputs.property 'version', project.version
-    if (isNeo) {
-        filesMatching('META-INF/neoforge.mods.toml') {
-            expand version: project.version
-        }
-        exclude("META-INF/mods.toml")
-    } else {
-        filesMatching('META-INF/mods.toml') {
-            expand version: project.version
-        }
-        exclude("META-INF/neoforge.mods.toml")
+
+    filesMatching("fabric.mod.json") {
+        expand "version": inputs.properties.version
     }
 }
 
@@ -144,7 +151,7 @@ tasks.register("publishCurseForge", TaskPublishCurseForge) {
         mainFile.releaseType = "release"
         mainFile.changelog = CHANGELOG
         mainFile.changelogType = "markdown"
-        mainFile.addModLoader(isNeo ? "NeoForge" : "Forge")
+        mainFile.addModLoader("Fabric")
         Iterator<String> supported = javaInfo.supported.iterator()
         while (supported.hasNext()) {
             mainFile.addJavaVersion(supported.next());

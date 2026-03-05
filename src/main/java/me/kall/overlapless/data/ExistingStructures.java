@@ -12,15 +12,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = Overlapless.MOD_ID)
 public class ExistingStructures {
     private static final Object2ObjectMap<ResourceLocation, Long2ObjectMap<Set<ExistingStructure>>> EXISTING_STRUCTURES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
@@ -35,8 +31,7 @@ public class ExistingStructures {
         return EXISTING_STRUCTURES.getOrDefault(dimension, Long2ObjectMaps.emptyMap()).get(chunk);
     }
 
-    @SubscribeEvent
-    public static void shutdown(LevelEvent.Save event) {
+    public static void shutdown() {
         if (EXISTING_STRUCTURES.isEmpty()) return;
         EXISTING_STRUCTURES.clear();
     }

@@ -1,29 +1,28 @@
 package me.kall.overlapless;
 
 import me.kall.overlapless.config.Config;
+import me.kall.overlapless.ported.ServerLifecycleHooks;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-@Mod(Overlapless.MOD_ID)
-public final class Overlapless {
+public final class Overlapless implements ModInitializer {
     public static final String MOD_ID = "overlapless";
     public static final Logger LOGGER = LogManager.getLogger(Overlapless.class);
 
-    private static final ResourceLocation NONE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "none");
+    private static final ResourceLocation NONE = new ResourceLocation(MOD_ID, "none");
 
-    public Overlapless(@NotNull FMLJavaModLoadingContext context) {
-        Config.register(context, context.getModEventBus());
+    @Override
+    public void onInitialize() {
+        Config.register(MOD_ID);
+        ServerLifecycleHooks.init();
     }
 
     public static ResourceLocation getName(Structure structure) {

@@ -22,7 +22,6 @@ public final class Overlapless implements ModInitializer {
     @Override
     public void onInitialize() {
         Config.register(MOD_ID);
-        ServerLifecycleHooks.init();
     }
 
     public static ResourceLocation getName(Structure structure) {

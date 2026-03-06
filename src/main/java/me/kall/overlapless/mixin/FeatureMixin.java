@@ -26,17 +26,22 @@ public abstract class FeatureMixin<FC extends FeatureConfiguration> {
     private void skipFeature(FC config, WorldGenLevel reader, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         ResourceLocation id = BuiltInRegistries.FEATURE.getKey((Feature<?>) (Object) this);
         if (id == null) return;
-        if (Config.getSkippableFeatures().contains(id)) {
+        if (!Config.getSkippableFeatures().contains(id)) return;
+
+        ExistingStructures.LOCK.readLock().lock();
+        try {
             Set<ExistingStructure> structures = ExistingStructures.getInChunk(reader.getLevel().dimension().location(), ChunkPos.asLong(pos));
             if (structures == null) return;
             int y = pos.getY();
             for (ExistingStructure existingStructure : structures) {
-                if (y >= existingStructure.minY() && pos.getY() <= y) {
+                if (y >= existingStructure.minY() && y <= existingStructure.maxY()) {
                     cir.setReturnValue(false);
                     if (Config.logSkipFeature()) Overlapless.LOGGER.info("Section at [{}] is occupied by structure {}. Skipping the generation of feature {}.", pos.toShortString(), existingStructure.existing(), id.toString());
                     break;
                 }
             }
+        } finally {
+            ExistingStructures.LOCK.readLock().unlock();
         }
     }
 }

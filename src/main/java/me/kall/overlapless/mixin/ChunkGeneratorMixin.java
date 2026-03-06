@@ -7,6 +7,7 @@ import me.kall.overlapless.config.Config;
 import me.kall.overlapless.data.ExistingStructure;
 import me.kall.overlapless.data.ExistingStructures;
 import net.minecraft.core.SectionPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.StructureManager;
@@ -26,22 +27,29 @@ public abstract class ChunkGeneratorMixin {
     @WrapOperation(method = "tryGenerateStructure", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/StructureManager;setStartForStructure(Lnet/minecraft/core/SectionPos;Lnet/minecraft/world/level/levelgen/structure/Structure;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/StructureAccess;)V"))
     private void genStructure(StructureManager structureManager, SectionPos sectionPos, Structure structure, @NotNull StructureStart pendingStructure, StructureAccess structureAccess, Operation<Void> original) {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
-        LevelAccessor levelAccessor = ((StructureManagerAccessor)structureManager).getLevel();
-        ExistingStructure existing = ExistingStructures.getAnyExisting(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
+        ResourceLocation id = Overlapless.getName(pendingStructure.getStructure());
 
-        if (existing != null) {
-            if (Config.logSkipStructure()) {
-                int x = sectionPos.minBlockX();
-                int z = sectionPos.minBlockZ();
-                Overlapless.LOGGER.info("Section at [{}, {minY: {}, maxY: {}}, {}] is occupied by structure {}. Skipping the generation of {} at [{}, {minY: {}, maxY: {}}, {}]", x, existing.minY(), existing.maxY(), z, existing.existing(), Overlapless.getName(pendingStructure.getStructure()), x, pendingBox.minY(), pendingBox.maxY(), z);
+        LevelAccessor levelAccessor = ((StructureManagerAccessor) structureManager).getLevel();
+        ServerLevel serverLevel = levelAccessor instanceof WorldGenLevel ? ((WorldGenLevel) levelAccessor).getLevel() : (ServerLevel) levelAccessor;
+
+        ResourceLocation dimension = serverLevel.dimension().location();
+
+        ExistingStructures.LOCK.writeLock().lock();
+        try {
+            ExistingStructure existing = ExistingStructures.getAnyExisting(pendingBox.minX(), pendingBox.maxX(), pendingBox.minZ(), pendingBox.maxZ(), pendingBox.minY(), pendingBox.maxY(), id, dimension);
+            if (existing != null) {
+                if (Config.logSkipStructure()) {
+                    int x = sectionPos.minBlockX();
+                    int z = sectionPos.minBlockZ();
+                    Overlapless.LOGGER.info("Section at [{}, {minY: {}, maxY: {}}, {}] is occupied by structure {}. Skipping the generation of {} at [{}, {minY: {}, maxY: {}}, {}]", x, existing.minY(), existing.maxY(), z, existing.existing(), id, x, pendingBox.minY(), pendingBox.maxY(), z);
+                }
+                return;
             }
-            return;
-        }
 
-        original.call(structureManager, sectionPos, structure, pendingStructure, structureAccess);
-
-        if (structureManager.getStartForStructure(sectionPos, structure, structureAccess) != null) {
-            ExistingStructures.afterStructureGeneration(pendingStructure, levelAccessor instanceof WorldGenLevel worldGenLevel ? worldGenLevel.getLevel() : (ServerLevel) levelAccessor);
+            original.call(structureManager, sectionPos, structure, pendingStructure, structureAccess);
+            ExistingStructures.afterStructureGeneration(pendingBox.minX(), pendingBox.maxX(), pendingBox.minZ(), pendingBox.maxZ(), pendingBox.minY(), pendingBox.maxY(), id, dimension);
+        } finally {
+            ExistingStructures.LOCK.writeLock().unlock();
         }
     }
 }

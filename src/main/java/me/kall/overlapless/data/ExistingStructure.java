@@ -30,7 +30,8 @@ public final class ExistingStructure {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof ExistingStructure existingStructure) {
+        if (object instanceof ExistingStructure) {
+            ExistingStructure existingStructure = (ExistingStructure) object;
             return existingStructure.minY == this.minY && existingStructure.maxY == this.maxY && Objects.equals(existingStructure.existing, this.existing);
         }
         return false;

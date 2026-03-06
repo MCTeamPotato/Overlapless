@@ -12,7 +12,6 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -74,7 +73,7 @@ public class Config {
 
             for (String string : list) {
                 ResourceLocation id = ResourceLocation.parse(string);
-                Feature<?> feature = ForgeRegistries.FEATURES.getValue(id);
+                Feature<?> feature = BuiltInRegistries.FEATURE.get(id);
                 if (feature == null) {
                     Overlapless.LOGGER.error("Entry {} in SkippableFeatures config option is invalid. Failed to find corresponding feature registry element.", string);
                 } else {

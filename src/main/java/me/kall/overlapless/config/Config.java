@@ -73,7 +73,7 @@ public class Config {
 
             for (String string : list) {
                 ResourceLocation id = ResourceLocation.parse(string);
-                Feature<?> feature = BuiltInRegistries.FEATURE.get(id);
+                Feature<?> feature = BuiltInRegistries.FEATURE.getValue(id);
                 if (feature == null) {
                     Overlapless.LOGGER.error("Entry {} in SkippableFeatures config option is invalid. Failed to find corresponding feature registry element.", string);
                 } else {
@@ -96,11 +96,11 @@ public class Config {
                 return UNSKIPPABLE_STRUCTURES;
             }
 
-            server.registryAccess().registry(Registries.STRUCTURE).ifPresent(registry -> {
+            server.registryAccess().lookup(Registries.STRUCTURE).ifPresent(registry -> {
                 UNSKIPPABLE_STRUCTURES.clear();
                 for (String string : list) {
                     ResourceLocation id = ResourceLocation.parse(string);
-                    Structure structure = registry.get(id);
+                    Structure structure = registry.getValue(id);
                     if (structure == null) {
                         Overlapless.LOGGER.error("Entry {} in UnskippableStructures config option is invalid. Failed to find corresponding structure registry element.", string);
                     } else {

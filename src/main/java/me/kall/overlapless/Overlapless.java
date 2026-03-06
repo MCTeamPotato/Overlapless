@@ -30,7 +30,7 @@ public final class Overlapless {
     public static ResourceLocation getName(Structure structure) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) return NONE;
-        Optional<Registry<Structure>> optionalStructures = server.registryAccess().registry(Registries.STRUCTURE);
+        Optional<Registry<Structure>> optionalStructures = server.registryAccess().lookup(Registries.STRUCTURE);
         if (optionalStructures.isEmpty()) return NONE;
         ResourceLocation id = optionalStructures.get().getKey(structure);
         return id == null ? NONE : id;

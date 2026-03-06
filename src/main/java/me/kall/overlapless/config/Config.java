@@ -4,11 +4,10 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.kall.overlapless.Overlapless;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -41,7 +40,7 @@ public class Config {
                         "It's not acceptable to prevent all the features from getting overlapped with structures. Because trees/ores/flowers/etc small things are also features lol.",
                         "All the registered features: " + Arrays.toString(ForgeRegistries.FEATURES.getKeys().toArray())
                 )
-                .defineListAllowEmpty("SkippableFeatures", Lists.newArrayList(), Predicates.alwaysTrue());
+                .defineList("SkippableFeatures", Lists.newArrayList(), Predicates.alwaysTrue());
         PRINT_SKIPPING_STRUCTURE = builder.define("PrintStructureSkipEventInLog", true);
         PRINT_SKIPPING_FEATURE = builder.define("PrintFeatureSkipEventInLog", true);
         builder.pop();
@@ -96,18 +95,15 @@ public class Config {
                 return UNSKIPPABLE_STRUCTURES;
             }
 
-            server.registryAccess().registry(Registries.STRUCTURE).ifPresent(registry -> {
-                UNSKIPPABLE_STRUCTURES.clear();
-                for (String string : list) {
-                    ResourceLocation id = ResourceLocation.parse(string);
-                    Structure structure = registry.get(id);
-                    if (structure == null) {
-                        Overlapless.LOGGER.error("Entry {} in UnskippableStructures config option is invalid. Failed to find corresponding structure registry element.", string);
-                    } else {
-                        UNSKIPPABLE_STRUCTURES.add(id);
-                    }
+            for (String string : list) {
+                ResourceLocation id = ResourceLocation.parse(string);
+                StructureFeature<?> structure = ForgeRegistries.STRUCTURE_FEATURES.getValue(id);
+                if (structure == null) {
+                    Overlapless.LOGGER.error("Entry {} in UnskippableStructures config option is invalid. Failed to find corresponding structure registry element.", string);
+                } else {
+                    UNSKIPPABLE_STRUCTURES.add(id);
                 }
-            });
+            }
         }
 
         return UNSKIPPABLE_STRUCTURES;

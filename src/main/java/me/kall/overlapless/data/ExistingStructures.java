@@ -11,7 +11,7 @@ import me.kall.overlapless.config.Config;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ public class ExistingStructures {
     }
 
     @SubscribeEvent
-    public static void shutdown(LevelEvent.Save event) {
+    public static void shutdown(WorldEvent.Save event) {
         LOCK.writeLock().lock();
         try {
             if (EXISTING_STRUCTURES.isEmpty()) return;

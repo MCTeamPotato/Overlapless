@@ -1,11 +1,11 @@
 package me.kall.overlapless.mixin;
 
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.StructureFeatureManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(StructureManager.class)
+@Mixin(StructureFeatureManager.class)
 public interface StructureManagerAccessor {
     @Accessor("level")
     LevelAccessor getLevel();

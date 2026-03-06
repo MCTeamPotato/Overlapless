@@ -29,14 +29,14 @@ public abstract class ChunkGeneratorMixin {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
         ResourceLocation id = Overlapless.getName(pendingStructure.getStructure());
 
-        LevelAccessor levelAccessor = ((StructureManagerAccessor)structureManager).getLevel();
+        LevelAccessor levelAccessor = ((StructureManagerAccessor) structureManager).getLevel();
         ServerLevel serverLevel = levelAccessor instanceof WorldGenLevel ? ((WorldGenLevel) levelAccessor).getLevel() : (ServerLevel) levelAccessor;
 
         ResourceLocation dimension = serverLevel.dimension().location();
 
-        synchronized (ExistingStructures.EXISTING_STRUCTURES) {
+        ExistingStructures.LOCK.writeLock().lock();
+        try {
             ExistingStructure existing = ExistingStructures.getAnyExisting(pendingBox.minX(), pendingBox.maxX(), pendingBox.minZ(), pendingBox.maxZ(), pendingBox.minY(), pendingBox.maxY(), id, dimension);
-
             if (existing != null) {
                 if (Config.logSkipStructure()) {
                     int x = sectionPos.minBlockX();
@@ -48,6 +48,8 @@ public abstract class ChunkGeneratorMixin {
 
             original.call(structureManager, sectionPos, structure, pendingStructure, structureAccess);
             ExistingStructures.afterStructureGeneration(pendingBox.minX(), pendingBox.maxX(), pendingBox.minZ(), pendingBox.maxZ(), pendingBox.minY(), pendingBox.maxY(), id, dimension);
+        } finally {
+            ExistingStructures.LOCK.writeLock().unlock();
         }
     }
 }

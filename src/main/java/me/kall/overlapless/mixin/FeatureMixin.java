@@ -27,14 +27,16 @@ public abstract class FeatureMixin<FC extends FeatureConfiguration> {
         ResourceLocation id = ForgeRegistries.FEATURES.getKey((Feature<?>) (Object) this);
         if (id == null) return;
         if (Config.getSkippableFeatures().contains(id)) {
-            Set<ExistingStructure> structures = ExistingStructures.getInChunk(reader.getLevel().dimension().location(), ChunkPos.asLong(pos));
-            if (structures == null) return;
-            int y = pos.getY();
-            for (ExistingStructure existingStructure : structures) {
-                if (y >= existingStructure.minY() && pos.getY() <= y) {
-                    cir.setReturnValue(false);
-                    if (Config.logSkipFeature()) Overlapless.LOGGER.info("Section at [{}] is occupied by structure {}. Skipping the generation of feature {}.", pos.toShortString(), existingStructure.existing(), id.toString());
-                    break;
+            synchronized (ExistingStructures.EXISTING_STRUCTURES) {
+                Set<ExistingStructure> structures = ExistingStructures.getInChunk(reader.getLevel().dimension().location(), ChunkPos.asLong(pos));
+                if (structures == null) return;
+                int y = pos.getY();
+                for (ExistingStructure existingStructure : structures) {
+                    if (y >= existingStructure.minY() && y <= existingStructure.maxY()) {
+                        cir.setReturnValue(false);
+                        if (Config.logSkipFeature()) Overlapless.LOGGER.info("Section at [{}] is occupied by structure {}. Skipping the generation of feature {}.", pos.toShortString(), existingStructure.existing(), id.toString());
+                        break;
+                    }
                 }
             }
         }

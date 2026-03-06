@@ -4,18 +4,19 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.kall.overlapless.Overlapless;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -24,14 +25,14 @@ import java.util.List;
 import java.util.Set;
 
 public class Config {
-    private static final ForgeConfigSpec CONFIG;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> UNSKIPPABLE_STRUCTURES_CONFIG, SKIPPABLE_FEATURES_CONFIG;
-    private static final ForgeConfigSpec.BooleanValue PRINT_SKIPPING_STRUCTURE, PRINT_SKIPPING_FEATURE;
+    private static final ModConfigSpec CONFIG;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> UNSKIPPABLE_STRUCTURES_CONFIG, SKIPPABLE_FEATURES_CONFIG;
+    private static final ModConfigSpec.BooleanValue PRINT_SKIPPING_STRUCTURE, PRINT_SKIPPING_FEATURE;
     private static final Set<ResourceLocation> UNSKIPPABLE_STRUCTURES = new ObjectOpenHashSet<>();
     private static final Set<ResourceLocation> SKIPPABLE_FEATURES = new ObjectOpenHashSet<>();
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         builder.push("Overlapless");
         UNSKIPPABLE_STRUCTURES_CONFIG = builder.comment("These will always generate even if there are existing structures that occupy the chunk sections.").defineList("UnskippableStructures", Lists.newArrayList(), Predicates.alwaysTrue());
         SKIPPABLE_FEATURES_CONFIG  = builder
@@ -39,17 +40,17 @@ public class Config {
                         "If you still find overlapping generated structures in your world, they are most likely Features rather than Structures. For example, Desert Well and Amethyst Geode",
                         "You can write down the features' registry names here so they will not get overlapped with existing structures.",
                         "It's not acceptable to prevent all the features from getting overlapped with structures. Because trees/ores/flowers/etc small things are also features lol.",
-                        "All the registered features: " + Arrays.toString(ForgeRegistries.FEATURES.getKeys().toArray())
+                        "All the registered features: " + Arrays.toString(BuiltInRegistries.FEATURE.keySet().toArray())
                 )
-                .defineListAllowEmpty("SkippableFeatures", Lists.newArrayList(), Predicates.alwaysTrue());
+                .defineListAllowEmpty("SkippableFeatures", Lists.newArrayList(), () -> "namespace:path", Predicates.alwaysTrue());
         PRINT_SKIPPING_STRUCTURE = builder.define("PrintStructureSkipEventInLog", true);
         PRINT_SKIPPING_FEATURE = builder.define("PrintFeatureSkipEventInLog", true);
         builder.pop();
         CONFIG = builder.build();
     }
 
-    public static void register(@NotNull ModLoadingContext context, @NotNull IEventBus modBus) {
-        context.registerConfig(ModConfig.Type.COMMON, Config.CONFIG);
+    public static void register(@NotNull ModContainer container, @NotNull IEventBus modBus) {
+        container.registerConfig(ModConfig.Type.COMMON, Config.CONFIG);
         modBus.addListener((ModConfigEvent.Reloading event) -> {
             if (event.getConfig().getModId().equals(Overlapless.MOD_ID)) {
                 UNSKIPPABLE_STRUCTURES.clear();

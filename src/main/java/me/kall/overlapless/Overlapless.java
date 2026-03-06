@@ -6,12 +6,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -22,8 +23,8 @@ public final class Overlapless {
 
     private static final ResourceLocation NONE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "none");
 
-    public Overlapless(@NotNull FMLJavaModLoadingContext context) {
-        Config.register(context, context.getModEventBus());
+    public Overlapless(IEventBus modBus, Dist dist, ModContainer container) {
+        Config.register(container, modBus);
     }
 
     public static ResourceLocation getName(Structure structure) {

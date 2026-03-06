@@ -1,7 +1,6 @@
 {
   "required": true,
   "package": "me.kall.overlapless.mixin",
-  "plugin": "me.kall.overlapless.mixin.MixinExtrasInitializer",
   "compatibilityLevel": "JAVA_8",
   "overwrites": {
     "conformVisibility": false

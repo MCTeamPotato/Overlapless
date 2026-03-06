@@ -18,3 +18,6 @@
 - Introduce PrintStructureSkipEventInLog and PrintFeatureSkipEventInLog config option
 # 1.1.1
 - Resolve https://github.com/MCTeamPotato/Overlapless/issues/2
+# 1.2.0
+- Port to fabric 1.21.1 and 1.20.1
+- Fix Feature skipping logic

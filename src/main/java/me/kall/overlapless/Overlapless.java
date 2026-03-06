@@ -17,7 +17,7 @@ public final class Overlapless implements ModInitializer {
     public static final String MOD_ID = "overlapless";
     public static final Logger LOGGER = LogManager.getLogger(Overlapless.class);
 
-    private static final ResourceLocation NONE = new ResourceLocation(MOD_ID, "none");
+    private static final ResourceLocation NONE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "none");
 
     @Override
     public void onInitialize() {

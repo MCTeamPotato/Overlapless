@@ -7,7 +7,7 @@ import me.kall.overlapless.config.Config;
 import me.kall.overlapless.data.ExistingStructure;
 import me.kall.overlapless.data.ExistingStructures;
 import net.minecraft.core.SectionPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.StructureManager;
@@ -27,12 +27,12 @@ public abstract class ChunkGeneratorMixin {
     @WrapOperation(method = "tryGenerateStructure", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/StructureManager;setStartForStructure(Lnet/minecraft/core/SectionPos;Lnet/minecraft/world/level/levelgen/structure/Structure;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/StructureAccess;)V"))
     private void genStructure(StructureManager structureManager, SectionPos sectionPos, Structure structure, @NotNull StructureStart pendingStructure, StructureAccess structureAccess, Operation<Void> original) {
         BoundingBox pendingBox = pendingStructure.getBoundingBox();
-        ResourceLocation id = Overlapless.getName(pendingStructure.getStructure());
+        Identifier id = Overlapless.getName(pendingStructure.getStructure());
 
         LevelAccessor levelAccessor = ((StructureManagerAccessor) structureManager).getLevel();
         ServerLevel serverLevel = levelAccessor instanceof WorldGenLevel ? ((WorldGenLevel) levelAccessor).getLevel() : (ServerLevel) levelAccessor;
 
-        ResourceLocation dimension = serverLevel.dimension().location();
+        Identifier dimension = serverLevel.dimension().identifier();
 
         ExistingStructures.LOCK.writeLock().lock();
         try {

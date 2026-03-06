@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.kall.overlapless.Overlapless;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -27,8 +27,8 @@ public class Config {
     private static final ModConfigSpec CONFIG;
     private static final ModConfigSpec.ConfigValue<List<? extends String>> UNSKIPPABLE_STRUCTURES_CONFIG, SKIPPABLE_FEATURES_CONFIG;
     private static final ModConfigSpec.BooleanValue PRINT_SKIPPING_STRUCTURE, PRINT_SKIPPING_FEATURE;
-    private static final Set<ResourceLocation> UNSKIPPABLE_STRUCTURES = new ObjectOpenHashSet<>();
-    private static final Set<ResourceLocation> SKIPPABLE_FEATURES = new ObjectOpenHashSet<>();
+    private static final Set<Identifier> UNSKIPPABLE_STRUCTURES = new ObjectOpenHashSet<>();
+    private static final Set<Identifier> SKIPPABLE_FEATURES = new ObjectOpenHashSet<>();
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -66,13 +66,13 @@ public class Config {
         return PRINT_SKIPPING_FEATURE.get();
     }
 
-    public static Set<ResourceLocation> getSkippableFeatures() {
+    public static Set<Identifier> getSkippableFeatures() {
         if (SKIPPABLE_FEATURES.isEmpty()) {
             List<? extends String> list = SKIPPABLE_FEATURES_CONFIG.get();
             if (list.isEmpty()) return Collections.emptySet();
 
             for (String string : list) {
-                ResourceLocation id = ResourceLocation.parse(string);
+                Identifier id = Identifier.parse(string);
                 Feature<?> feature = BuiltInRegistries.FEATURE.getValue(id);
                 if (feature == null) {
                     Overlapless.LOGGER.error("Entry {} in SkippableFeatures config option is invalid. Failed to find corresponding feature registry element.", string);
@@ -85,21 +85,21 @@ public class Config {
         return SKIPPABLE_FEATURES;
     }
 
-    public static Set<ResourceLocation> getUnskippableStructures() {
+    public static Set<Identifier> getUnskippableStructures() {
         if (UNSKIPPABLE_STRUCTURES.isEmpty()) {
             List<? extends String> list = UNSKIPPABLE_STRUCTURES_CONFIG.get();
             if (list.isEmpty()) return Collections.emptySet();
 
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server == null) {
-                for (String name : list) UNSKIPPABLE_STRUCTURES.add(ResourceLocation.parse(name));
+                for (String name : list) UNSKIPPABLE_STRUCTURES.add(Identifier.parse(name));
                 return UNSKIPPABLE_STRUCTURES;
             }
 
             server.registryAccess().lookup(Registries.STRUCTURE).ifPresent(registry -> {
                 UNSKIPPABLE_STRUCTURES.clear();
                 for (String string : list) {
-                    ResourceLocation id = ResourceLocation.parse(string);
+                    Identifier id = Identifier.parse(string);
                     Structure structure = registry.getValue(id);
                     if (structure == null) {
                         Overlapless.LOGGER.error("Entry {} in UnskippableStructures config option is invalid. Failed to find corresponding structure registry element.", string);

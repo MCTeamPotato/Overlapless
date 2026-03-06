@@ -6,7 +6,7 @@ import me.kall.overlapless.data.ExistingStructure;
 import me.kall.overlapless.data.ExistingStructures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
@@ -24,13 +24,13 @@ import java.util.Set;
 public abstract class FeatureMixin<FC extends FeatureConfiguration> {
     @Inject(method = "place(Lnet/minecraft/world/level/levelgen/feature/configurations/FeatureConfiguration;Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Z", at = @At("HEAD"), cancellable = true)
     private void skipFeature(FC config, WorldGenLevel reader, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        ResourceLocation id = BuiltInRegistries.FEATURE.getKey((Feature<?>) (Object) this);
+        Identifier id = BuiltInRegistries.FEATURE.getKey((Feature<?>) (Object) this);
         if (id == null) return;
         if (!Config.getSkippableFeatures().contains(id)) return;
 
         ExistingStructures.LOCK.readLock().lock();
         try {
-            Set<ExistingStructure> structures = ExistingStructures.getInChunk(reader.getLevel().dimension().location(), ChunkPos.asLong(pos));
+            Set<ExistingStructure> structures = ExistingStructures.getInChunk(reader.getLevel().dimension().identifier(), ChunkPos.asLong(pos));
             if (structures == null) return;
             int y = pos.getY();
             for (ExistingStructure existingStructure : structures) {

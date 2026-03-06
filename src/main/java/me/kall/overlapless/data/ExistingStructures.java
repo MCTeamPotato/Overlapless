@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.kall.overlapless.Overlapless;
 import me.kall.overlapless.config.Config;
 import net.minecraft.core.SectionPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -24,9 +24,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @EventBusSubscriber(modid = Overlapless.MOD_ID)
 public class ExistingStructures {
     public static final ReadWriteLock LOCK = new ReentrantReadWriteLock();
-    public static final Object2ObjectMap<ResourceLocation, Long2ObjectMap<Set<ExistingStructure>>> EXISTING_STRUCTURES = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<Identifier, Long2ObjectMap<Set<ExistingStructure>>> EXISTING_STRUCTURES = new Object2ObjectOpenHashMap<>();
 
-    private static void record(ResourceLocation dimension, long chunk, ExistingStructure existingStructure) {
+    private static void record(Identifier dimension, long chunk, ExistingStructure existingStructure) {
         EXISTING_STRUCTURES
                 .computeIfAbsent(dimension, key -> new Long2ObjectOpenHashMap<>())
                 .computeIfAbsent(chunk, key -> new ObjectOpenHashSet<>())
@@ -48,11 +48,11 @@ public class ExistingStructures {
         return Math.max(minY1, minY2) <= Math.min(maxY1, maxY2);
     }
 
-    public static @Nullable Set<ExistingStructure> getInChunk(ResourceLocation dimension, long chunk) {
+    public static @Nullable Set<ExistingStructure> getInChunk(Identifier dimension, long chunk) {
         return EXISTING_STRUCTURES.getOrDefault(dimension, Long2ObjectMaps.emptyMap()).get(chunk);
     }
 
-    public static @Nullable ExistingStructure getAnyExisting(int minX, int maxX, int minZ, int maxZ, int minY, int maxY, ResourceLocation id, ResourceLocation dimension) {
+    public static @Nullable ExistingStructure getAnyExisting(int minX, int maxX, int minZ, int maxZ, int minY, int maxY, Identifier id, Identifier dimension) {
         if (Config.getUnskippableStructures().contains(id)) return null;
 
         int minChunkX = SectionPos.blockToSectionCoord(minX);
@@ -83,7 +83,7 @@ public class ExistingStructures {
         return existing;
     }
 
-    public static void afterStructureGeneration(int minX, int maxX, int minZ, int maxZ, int minY, int maxY, @NotNull ResourceLocation id, ResourceLocation dimension) {
+    public static void afterStructureGeneration(int minX, int maxX, int minZ, int maxZ, int minY, int maxY, @NotNull Identifier id, Identifier dimension) {
         int minChunkX = SectionPos.blockToSectionCoord(minX);
         int maxChunkX = SectionPos.blockToSectionCoord(maxX);
         int minChunkZ = SectionPos.blockToSectionCoord(minZ);

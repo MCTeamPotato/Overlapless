@@ -34,7 +34,7 @@ public class Config {
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         builder.push("Overlapless");
-        UNSKIPPABLE_STRUCTURES_CONFIG = builder.comment("These will always generate even if there are existing structures that occupy the chunk sections.").defineList("UnskippableStructures", Lists.newArrayList(), Predicates.alwaysTrue());
+        UNSKIPPABLE_STRUCTURES_CONFIG = builder.comment("These will always generate even if there are existing structures that occupy the chunk sections.").defineListAllowEmpty("UnskippableStructures", Lists.newArrayList(), () -> "namespace:path", Predicates.alwaysTrue());
         SKIPPABLE_FEATURES_CONFIG  = builder
                 .comment(
                         "If you still find overlapping generated structures in your world, they are most likely Features rather than Structures. For example, Desert Well and Amethyst Geode",

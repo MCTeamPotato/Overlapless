@@ -6,14 +6,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import me.kall.overlapless.Overlapless;
 import me.kall.overlapless.config.Config;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +28,7 @@ public class ExistingStructures {
                 .add(existingStructure);
     }
 
-    @SubscribeEvent
-    public static void shutdown(LevelEvent.Save event) {
+    public static void shutdown() {
         LOCK.writeLock().lock();
         try {
             if (EXISTING_STRUCTURES.isEmpty()) return;
